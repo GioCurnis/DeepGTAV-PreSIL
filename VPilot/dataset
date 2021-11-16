@@ -23,10 +23,13 @@ def ensureDirExists(filename):
 
 width = 1920
 height = 1080
+#width = 1600
+#height = 900
+
 index = 0 #Use startIndex to change index to start on
 startIndex = 0
 
-oldExport = False
+oldExport = True
 recordScenario = False
 positionScenario = False
 tracking = False
@@ -34,7 +37,7 @@ collectStationary = False
 collectVehicles = True
 collectPeds = True
 collectOffscreen = False
-captureRate = 1
+captureRate = 5
 driveMode = 786603 #Normal?
 
 base_folder = os.environ['DEEPGTAV_EXPORT_DIR'] + "\\"
@@ -43,7 +46,7 @@ if tracking:
     collectVehicles = True
     collectPeds = True
     collectOffscreen = False
-    captureRate = 25
+    #captureRate = 25
     driveMode = 537657771 #stop at lights; use blinkers; avoid highways
 else:
     base_folder = base_folder + "object\\"
@@ -90,7 +93,7 @@ if __name__ == '__main__':
         # vehicles.append(["benson", 0, 4, 90, 0, 0])
         #vehicles.append(["vindicator", 7, 1, 0, 0, 0])
         peds = []
-        peds.append([0, 70, 35, 0])
+        #peds.append([0, 70, 35, 0])
         #peds.append([1, 10, 0, 0])
         #peds.append([2, 10, 1, 0])
         #peds.append([9, 9, 0, 90])
@@ -107,10 +110,10 @@ if __name__ == '__main__':
         #peds.append([5, 8, 0, 270])
 
         # TruPercept Scenario: Occluded pedestrian
-        startLocation = [245, -995, 30]
-        vehicles.append(["granger", 7, 3, 0, 0, 0])
-        peds.append([10, 10, 5, 90])
-        vehicles.append(["voltic", 25, -2, 180, 0, 0])
+        #startLocation = [245, -995, 30]
+        #vehicles.append(["granger", 7, 3, 0, 0, 0])
+        #peds.append([10, 10, 5, 90])
+        #vehicles.append(["voltic", 25, -2, 180, 0, 0])
 
         # Pitch view
         
@@ -119,7 +122,7 @@ if __name__ == '__main__':
         # startLocation = [320.0,3600.0]
 
         #Diner in mountains
-        # startLocation = [2561, 2637, 110]
+        #startLocation = [2561, 2637, 110]
 
         # Tracks
         # startLocation = [1041, 53, 340]
@@ -134,39 +137,47 @@ if __name__ == '__main__':
 
         # vehicles.append(["bus", 14, 0, 0, 0, 0])
         # startLocation = [-564.368, 26.8335, 47, 295.413]
-
+        startLocation = [992, 2036, 58, 180]
         lidarParam = 7
-        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds, reward=[15.0, 0.0],
-                        direction=None, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=True,
+        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds,
+                        direction=None, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=False,
                         stationaryScene=True, collectTracking=tracking, vehiclesToCreate=vehicles, pedsToCreate=peds, startIndex=startIndex, lidarParam=lidarParam,
                         recordScenario=recordScenario, positionScenario=positionScenario)
 
-        scenario = Scenario(drivingMode=[-1,0], location=startLocation) #Stationary/manual mode
+        scenario = Scenario(drivingMode=[-1,0], location=startLocation, time=[11, 0], weather="CLEAR") #Stationary/manual mode
     else:
         
-        set_speed = 15.0
+        #set_speed = 15.0
 
         # TruPercept Scenario: Occluded pedestrian
         vehicles = []
         peds = []
-        vehicles.append(["benson", 7, 3.5, 340, 0, 0])
-        peds.append([10, 13, 5, 90])
-        vehicles.append(["voltic", 30, -6, 160, 0, 0])
-        set_speed = 2.0
-
+        #vehicles.append(["benson", 7, 3.5, 340, 0, 0])
+        #peds.append([10, 13, 5, 90])
+        #vehicles.append(["voltic", 30, -6, 160, 0, 0])
+        #set_speed = 2.0
+        finalDestination = [-896.67, 4380.34, 17.60]
         # Call to start dataset collection
-        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds, reward=[15.0, 0.0],
-                        direction=None, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=True,
+        dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds,
+                        direction=finalDestination, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=True,
                         stationaryScene=False, collectTracking=tracking, vehiclesToCreate=vehicles, pedsToCreate=peds, startIndex=startIndex, recordScenario=recordScenario, positionScenario=positionScenario)
-
+        #startLocation = [1041, 53, 340]
+        #startLocation = [992, 2036, 58, 180]
+        #startLocation = [924, 1752, 166]
+        #startLocation = [2561, 2637]
+        startLocation = [-1499.97, 4953.67] #fiume e raton canyon
         # Pitch view
         # startLocation = [-697.306, 995.426, 239, 55.1029]
         # startLocation = [-539.831, 665.427, 142.673, 278.001]
         # startLocation = [-554.445, 134.722, 62.6856, 313.719]
         # startLocation = [-564.368, 26.8335, 44, 295.413]
-        scenario = Scenario(drivingMode=[driveMode,15.0])#, location=startLocation) # Driving style is set to normal, with a speed of 15.0 mph. All other scenario options are random.
+        scenario = Scenario(drivingMode=[driveMode,2.0], location=startLocation, weather="CLEAR", time=[11, 0]) # Driving style is set to normal, with a speed of 10.0 mph. All other scenario options are random.
     # Send the Start request to DeepGTAV.
+    print("Starting on ", args.host, ":", args.port)
     client.sendMessage(Start(dataset=dataset,scenario=scenario))
+
+    mex = Start(dataset=dataset,scenario=scenario)
+    print(mex.scenario.__dict__)
 
     # if collectStationary:
     #     stoptime = time.time() + 20
@@ -176,35 +187,49 @@ if __name__ == '__main__':
     #     scenario.location = [2000,0]
     #     #scenario = Scenario(location=[1000,0])
     #     print("Sending config message...")
-    #     client.sendMessage(Config(dataset=dataset,scenario=scenario))
+    #client.sendMessage(Config(dataset=dataset,scenario=scenario))
 
     print("Message sent to client to begin.")
+    print(base_folder)
+    #print(args.dataset_path)
     # Start listening for messages coming from DeepGTAV. We do it for 80 hours
     stoptime = time.time() + 80*3600
-    while time.time() < stoptime:
+    while index < 10000:
+    #while time.time() < stoptime:
         if not recordScenario and not positionScenario:
             try:
                 # We receive a message as a Python dictionary
                 message = client.recvMessage()  
-                index = message['index']
+                #index = message['index']
+                print(message.keys())
+                print("location: ", message["location"])
+                #print("direction: ", message["direction"])
+                #print("curPosition: ", message["curPosition"])
+                #print(message["yawRate"])
+                #print(message["vehicles"])
+                #print(message["peds"])
 
                 print("Starting index %d" % index)
-                if tracking:
-                    indexString = "%04d\\%06d" % (message['seriesIndex'], index)
-                else:
-                    indexString = "%06d" % index
+                
+                
+                #if tracking:
+                #    indexString = "%04d\\%06d" % (message['seriesIndex'], index)
+                #else:
+                #    indexString = "%06d" % index
                 
                 if oldExport:
+                    '''
                     # The frame is a numpy array and can be displayed using OpenCV or similar       
                     image = frame2numpy(message['frame'], (width,height))
-                    filename = "%simage_2\\%s.png" % (base_folder, indexString)
+                    filename = "%simage_2\\%s.png" % (base_folder, index)
                     ensureDirExists(filename)
                     cv2.imwrite(filename, image)
                     print("image written index %d" % index)
                     
+                    
                     #Output tracking labels
                     if tracking:
-                        filename = "%slabels_tracking\\%04d.txt" % (base_folder, message['seriesIndex'])
+                        filename = "%slabels_tracking\\%04d.txt" % (base_folder, index)
                         ensureDirExists(filename)
                         text_file = open(filename, "a")
                         text_file.write("")
@@ -215,7 +240,7 @@ if __name__ == '__main__':
                             printInstances(filename, message['peds'], False, True, index)
                     
                     #Output object detections
-                    filename = "%slabels\\%s.txt" % (base_folder, indexString)
+                    filename = "%slabels\\%s.txt" % (base_folder, index)
                     ensureDirExists(filename)
                     text_file = open(filename, "w")
                     text_file.write("")
@@ -226,7 +251,7 @@ if __name__ == '__main__':
                         printInstances(filename, message['peds'], False)
                     
                     #Output unprocessed detections (For testing)
-                    filename = "%slabels_unprocessed\\%s.txt" % (base_folder, indexString)
+                    filename = "%slabels_unprocessed\\%s.txt" % (base_folder, index)
                     ensureDirExists(filename)
                     text_file = open(filename, "w")
                     text_file.write("")
@@ -237,7 +262,7 @@ if __name__ == '__main__':
                         printInstances(filename, message['peds'], False, False, index, False)
                     
                     #Output object detections with augmentations
-                    filename = "%slabels_aug\\%s.txt" % (base_folder, indexString)
+                    filename = "%slabels_aug\\%s.txt" % (base_folder, index)
                     ensureDirExists(filename)
                     text_file = open(filename, "w")
                     text_file.write("")
@@ -246,15 +271,15 @@ if __name__ == '__main__':
                         printInstances(filename, message['vehicles'], True)
                     if collectPeds:
                         printInstances(filename, message['peds'], True)
-
+                    
                     #Print calib file
                     if tracking:
                         if index == 0:
-                            filename = "%scalib\\%04d.txt" % (base_folder, message['seriesIndex'])
+                            filename = "%scalib\\%04d.txt" % (base_folder, index)
                             ensureDirExists(filename)
                             printCalib(filename, message['focalLen'], width, height)
                     else:
-                        filename = "%scalib\\%s.txt" % (base_folder, indexString)
+                        filename = "%scalib\\%s.txt" % (base_folder, index)
                         ensureDirExists(filename)
                         printCalib(filename, message['focalLen'], width, height)
 
@@ -269,7 +294,7 @@ if __name__ == '__main__':
                         # text_file.write("%s %s\n" % (dateString, text))
                         # text_file.close()
 
-                        filename = "%soxts\\data\\%s.txt" % (base_folder, indexString)
+                        filename = "%soxts\\data\\%s.txt" % (base_folder, index)
                         ensureDirExists(filename)
                         text_file = open(filename, "w")
                         #
@@ -277,20 +302,26 @@ if __name__ == '__main__':
                             curPosition[3], curPosition[4], curPosition[5], message['speed']))
                         text_file.close()
 
-
+                    '''
                     #Output current location:
-                    outputCurrLocation = False
-                    if outputCurrLocation:
-                        filename = "%slocation.txt" % (base_folder)
-                        ensureDirExists(filename)
-                        text_file = open(filename, "w")
-                        text_file.write("x: %d, y: %d, z: %d, heading %d" % (curPosition[0], curPosition[1], curPosition[2], curPosition[3]))
-                        text_file.close()
-                    print("ending index %d" % index)
+                    #curPosition = message['curPosition']
 
+                    #outputCurrLocation = True
+                    #if outputCurrLocation:
+                        #filename = "%slocation.txt" % (base_folder)
+                        #ensureDirExists(filename)
+                        #text_file = open(filename, "w")
+                        #text_file.write("x: %d, y: %d, z: %d, heading %d" % (curPosition[0], curPosition[1], curPosition[2], curPosition[3]))
+                        #text_file.close()
+                        #print("curPosition| x: ", curPosition[0], ", y: ", curPosition[1], ", z: ", curPosition[2], ", head: ", curPosition[3])
+                        #print("speed| speed: ", message['speed'], " mph")
+
+                    print("ending index %d" % index)
+                    print("\n\n")
             except KeyboardInterrupt:
                 break
             
+            index += 1
     # We tell DeepGTAV to stop
     client.sendMessage(Stop())
     client.close()

@@ -17,7 +17,7 @@
 
 extern "C" {
     __declspec(dllimport) int export_get_depth_buffer(void** buf);
-    __declspec(dllexport) int export_get_color_buffer(void** buf);
+    //__declspec(dllexport) int export_get_color_buffer(void** buf);
     __declspec(dllexport) int export_get_stencil_buffer(void** buf);
 }
 
@@ -37,6 +37,13 @@ void Scenario::parseScenarioConfig(const Value& sc, bool setDefaults) {
 	const Value& weather = sc["weather"];
 	const Value& vehicle = sc["vehicle"];
 	const Value& drivingMode = sc["drivingMode"];
+
+    log(std::to_string(setDefaults));
+
+    log(std::to_string(location.IsArray()));
+    log(std::to_string(location[0].GetInt()));
+    log(std::to_string(location[1].GetInt()));
+    log(std::to_string(location[2].GetInt()));
 
 	if (location.IsArray()) {
 		if (!location[0].IsNull()) x = location[0].GetFloat();
@@ -61,6 +68,12 @@ void Scenario::parseScenarioConfig(const Value& sc, bool setDefaults) {
 		x = 5000 * ((float)rand() / RAND_MAX) - 2500;
 		y = 8000 * ((float)rand() / RAND_MAX) - 2000;
 	}
+    
+    log(std::to_string(x));
+    log(std::to_string(y));
+    log(std::to_string(z));
+    log(std::to_string(startHeading));
+    
 
 	if (time.IsArray()) {
 		if (!time[0].IsNull()) hour = time[0].GetInt();
@@ -73,6 +86,9 @@ void Scenario::parseScenarioConfig(const Value& sc, bool setDefaults) {
         hour = 16;//TODO Do we want random times? rand() % 24;
 		minute = rand() % 60;
 	}
+
+    log(std::to_string(hour));
+    log(std::to_string(minute));
 
 	if (!weather.IsNull()) _weather = weather.GetString();
     //TODO: Do we want other weather?
@@ -90,6 +106,8 @@ void Scenario::parseScenarioConfig(const Value& sc, bool setDefaults) {
 	else if (setDefaults) {
 		_drivingMode = -1;
 	}
+
+    log("speed: " + std::to_string(_setSpeed));
 }
 
 void Scenario::parseDatasetConfig(const Value& dc, bool setDefaults) {
@@ -185,12 +203,16 @@ void Scenario::parseDatasetConfig(const Value& dc, bool setDefaults) {
 
     if (DRIVE_SPEC_AREA && !stationaryScene) {
         int startArea = 0;
-        dir.x = s_locationBounds[0][0][startArea];
-        dir.y = s_locationBounds[0][1][startArea];
+        dir.x = s_locationBounds[3][0][3];
+        dir.y = s_locationBounds[3][1][3];
         dir.z = 0.f;
-        x = s_locationBounds[0][0][startArea];//1,2,3,4,5,6,7,8 are all good
-        y = s_locationBounds[0][1][startArea];//1-0 was last one used for 'good' data
+        x = s_locationBounds[3][0][3];//1,2,3,4,5,6,7,8 are all good
+        y = s_locationBounds[3][1][3];//1-0 was last one used for 'good' data
+        z = 64.0f;
     }
+
+    log("dir x: "+std::to_string(dir.x));
+    log("dir y: "+std::to_string(dir.y));
 
     if (stationaryScene || TRUPERCEPT_SCENARIO) {
         vehiclesToCreate.clear();
@@ -271,15 +293,20 @@ void Scenario::parseDatasetConfig(const Value& dc, bool setDefaults) {
 }
 
 void Scenario::buildScenario() {
-	Vector3 pos, rotation;
-	Hash vehicleHash;
-	float heading;
+    Vector3 pos, rotation;
+    Hash vehicleHash;
+    float heading;
 
+    log("pos x prima: " + std::to_string(x));
+    log("pos y prima: " + std::to_string(y));
+    log("pos z prima: " + std::to_string(z));
+    /*
     if (!stationaryScene) {
         GAMEPLAY::SET_RANDOM_SEED(std::time(NULL));
         while (!PATHFIND::_0xF7B79A50B905A30D(-8192.0f, 8192.0f, -8192.0f, 8192.0f)) WAIT(0);
         PATHFIND::GET_CLOSEST_VEHICLE_NODE_WITH_HEADING(x, y, 0, &pos, &heading, 0, 0, 0);
     }
+    */
 
 	ENTITY::DELETE_ENTITY(&m_ownVehicle);
 	vehicleHash = GAMEPLAY::GET_HASH_KEY((char*)_vehicle);
@@ -296,6 +323,16 @@ void Scenario::buildScenario() {
         log(str);
         vehicles_created = false;
     }
+
+    log("pos x dopo: " + std::to_string(x));
+    log("pos y dopo: " + std::to_string(y));
+    log("pos z dopo: " + std::to_string(z));
+
+    pos.x = x;
+    pos.y = y;
+    pos.z = z;
+    heading = startHeading;
+    log("pos x: "+std::to_string(pos.x));
 	m_ownVehicle = VEHICLE::CREATE_VEHICLE(vehicleHash, pos.x, pos.y, pos.z, heading, FALSE, FALSE);
 	VEHICLE::SET_VEHICLE_ON_GROUND_PROPERLY(m_ownVehicle);
 
@@ -334,7 +371,12 @@ void Scenario::buildScenario() {
 	AI::CLEAR_PED_TASKS(ped);
 	if (_drivingMode >= 0 && !stationaryScene && !m_positionScenario) {
         if (DRIVE_SPEC_AREA && !START_SPEC_AREA) {
+            log("se non scrivo questo ho un problema");
+            log("dir x: " + std::to_string(dir.x));
+            log("dir y: " + std::to_string(dir.y));
+            log("dir z: " + std::to_string(dir.z));
             AI::TASK_VEHICLE_DRIVE_TO_COORD(ped, m_ownVehicle, dir.x, dir.y, dir.z, _setSpeed, Any(1.f), vehicleHash, _drivingMode, 50.f, true);
+            log("anche dopo drive_to_coord");
         }
         else {
             AI::TASK_VEHICLE_DRIVE_WANDER(ped, m_ownVehicle, _setSpeed, _drivingMode);
@@ -357,6 +399,7 @@ void Scenario::buildScenario() {
     if (m_recordScenario) {
         UNK1::_SET_RECORDING_MODE(1);
     }
+    log("in fondo a buildscenario()");
 }
 
 void Scenario::start(const Value& sc, const Value& dc) {
@@ -370,13 +413,15 @@ void Scenario::start(const Value& sc, const Value& dc) {
 	//Build scenario
 	buildScenario();
 
+
 	running = true;
+    log("running: "+std::to_string(running));
 	lastSafetyCheck = std::clock();
 }
 
 void Scenario::config(const Value& sc, const Value& dc) {
 	if (!running) return;
-
+    log("config dataset");
 	running = false;
 
 	//Parse options
@@ -405,8 +450,15 @@ void Scenario::run() {
         }
 
         if (DRIVE_SPEC_AREA && !START_SPEC_AREA) {
+            log("qui entro drive_spec_area");
+            log("currentPosition x: "+std::to_string(currentPos.x));
+            log("currentPosition y: " + std::to_string(currentPos.y));
+            log("dir x: " + std::to_string(dir.x));
+            log("dir y: " + std::to_string(dir.y));
+            log(std::to_string(pow(currentPos.x - dir.x, 2) + pow(currentPos.y - dir.y, 2)));
             if (pow(currentPos.x - dir.x, 2) + pow(currentPos.y - dir.y, 2) < pow(50, 2))
             {
+                log("if true");
                 std::vector<std::pair<float, float>> new_points = generate_n_random_points(
                     m_startArea, m_polyGrid, 1, 100, { { currentPos.x , currentPos.y } });
                 dir.x = new_points[0].first;
@@ -417,6 +469,7 @@ void Scenario::run() {
             }
             else if (!in_bounds(currentPos.x, currentPos.y, m_startArea, m_polyGrid))
             {
+                log("else if");
                 std::vector<std::pair<float, float>> new_points = generate_n_random_points(
                     m_startArea, m_polyGrid, 1, 100, { { currentPos.x , currentPos.y } });
                 dir.x = new_points[0].first;
@@ -426,7 +479,7 @@ void Scenario::run() {
                     GAMEPLAY::GET_HASH_KEY((char*)_vehicle), _drivingMode, 1.f, true);
             }
         }
-
+        log("esco spec_area");
 		if (_drivingMode < 0) {
 			CONTROLS::_SET_CONTROL_NORMAL(27, 71, currentThrottle); //[0,1]
 			CONTROLS::_SET_CONTROL_NORMAL(27, 72, currentBrake); //[0,1]
@@ -508,14 +561,18 @@ StringBuffer Scenario::generateMessage() {
         std::string filename = baseFolder + "object\\" + "location.txt";
         FILE* f = fopen(filename.c_str(), "w");
         std::ostringstream oss;
-        oss << currentPos.x << ", " << currentPos.y << ", " << currentPos.z << ", " << heading;
+        oss << currentPos.x << ", " << currentPos.y << ", " << currentPos.z << ", " << heading << ", ";
+        
+
+        Vector3 rotation = ENTITY::GET_ENTITY_ROTATION(m_ownVehicle, 0);
+        CAM::SET_CAM_ROT(camera, rotation.x, rotation.y, rotation.z, 0);
+
+        oss << rotation.x << ", " << rotation.y << ", " << rotation.z;
         std::string str = oss.str();
         fprintf(f, str.c_str());
         fprintf(f, "\n");
         fclose(f);
 
-        Vector3 rotation = ENTITY::GET_ENTITY_ROTATION(m_ownVehicle, 0);
-        CAM::SET_CAM_ROT(camera, rotation.x, rotation.y, rotation.z, 0);
         if (m_positionScenario) return buffer;
     }
 	
@@ -542,6 +599,12 @@ StringBuffer Scenario::generateMessage() {
     bool depthMap = true;
 
     setCamParams();
+
+    if (!m_pObjDet) {
+        depth_map = new float[s_camParams.width * s_camParams.height];
+        m_stencilBuffer = new uint8_t[s_camParams.width * s_camParams.height];
+    }
+
     //setColorBuffer();
     int depthSize = setDepthBuffer();
     if (depthMap) setStencilBuffer();
@@ -567,9 +630,9 @@ StringBuffer Scenario::generateMessage() {
         //Create vehicles if it is a stationary scenario
         createVehicles();
 
-        if (GENERATE_SECONDARY_PERSPECTIVES) {
+        /*if (GENERATE_SECONDARY_PERSPECTIVES) {
             generateSecondaryPerspectives();
-        }
+        }*/
 
         //For testing to ensure secondary ownvehicle aligns with main perspective
         //generateSecondaryPerspective(m_pObjDet->m_ownVehicleObj);
@@ -761,9 +824,9 @@ void Scenario::setPosition() {
 
 //TODO Calls to export_get_color_buffer are causing GTA to crash
 void Scenario::setColorBuffer() {
-    log("Before color buffer", true);
-    int size = export_get_color_buffer((void**)&color_buf);
-    log("After color buffer", true);
+    //log("Before color buffer", true);
+    //int size = export_get_color_buffer((void**)&color_buf);
+    //log("After color buffer", true);
 }
 
 void Scenario::setStencilBuffer() {
@@ -776,8 +839,11 @@ int Scenario::setDepthBuffer(bool prevDepth) {
     log("About to get depth buffer");
     int size = export_get_depth_buffer((void**)&depth_map);
 
+    
+
     std::ostringstream oss;
-    oss << "Depth buffer size: " << size;
+    oss << "Depth buffer size: " << size <<std::endl;
+    oss << *(depth_map) << std::endl;
     log(oss.str(), true);
 
     log("After getting depth buffer");

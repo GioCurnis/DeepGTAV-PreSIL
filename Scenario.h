@@ -76,12 +76,12 @@ private:
 	bool running = false;
 	Document d;
 
-    int m_startArea = 1; //Downtown (see s_locationBounds)
+    int m_startArea = 3; //Downtown (see s_locationBounds)
     std::vector<std::vector<char>> m_polyGrid;
 
     //Depth Map variables
-    float* depth_map = NULL;
-    uint8_t* m_stencilBuffer = NULL;
+    float* depth_map = nullptr;
+    uint8_t* m_stencilBuffer = nullptr;
     unsigned char* color_buf = NULL;
 
     bool vehicles_created = false;
