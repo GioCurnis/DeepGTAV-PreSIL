@@ -23,12 +23,12 @@ Stencil Buffer
 <img src="https://github.com/bradenhurl/DeepGTAV-PreSIL/blob/master/samples/342-stencil.png" alt="Stencil Buffer" width="900px">
 
 ## Installation
-1. Make sure GTAV is on version 1.0.1180.2 or below
+1. Make sure your version of ScriptHookV is up to date with GTAV version
 2. Copy-paste the contents of *bin/Release* under your GTAV installation directory
 3. Replace your saved game data in *Documents/Rockstar Games/GTA V/Profiles/* with the contents of *bin/SaveGame*
 4. Download *[paths.xml](https://drive.google.com/file/d/0B6pR5O2YrmHnNU9EMDBSSFpMV00/view?usp=sharing)* and store it also in the GTAV installation directory. 
 5. Download Eigen (http://eigen.tuxfamily.org/index.php?title=Main_Page) and create an environment variable (EIGEN_DIR) pointing to its directory.
-6. Obtain the VisionNative-Depth Extractor repo (https://github.com/bradenhurl/GTAVisionExport-DepthExtractor). Follow instructions to build the native repository.
+6. If *[GTAVisionNative.lib](https://github.com/GioCurnis/DeepGTAV-PreSIL/blob/master/bin/Release/GTAVisionNative.lib)* does not work follow the original instruction and obtain the VisionNative-Depth Extractor repo (https://github.com/bradenhurl/GTAVisionExport-DepthExtractor). Follow instructions to build the native repository.
 7. Create an environment variable (GTAVisionLib) pointing to the build path of GTAVisionNative.lib (from the previous step).
 8. Create an environment variable (GTAV_INSTALL_DIR) pointing to the GTAV installation directory.
 9. Create an environment variable (DEEPGTAV_DIR) pointing to the directory of this repository.
@@ -47,7 +47,7 @@ Stencil Buffer
 1. Start the game, walk outside of building if player is in one (game can crash if inside a building)
 2. Open a terminal to the VPilot subdirectory in this repository
 3. Start collection by running the dataset script in python i.e. 'python dataset'
-4. Press Ctrl + c with focus on the terminal to terminate the script
+4. Press Ctrl + c with focus on the terminal to terminate the script (__doesn't work__)
 
 ## How it works
 
@@ -62,6 +62,47 @@ The data sent back to the client and intitial conditions will depend on the para
 [VPilot](https://github.com/ai-tor/VPilot) provides a nice interface and examples written in Python to use DeepGTAV for your self-driving car research.
 
 The following chapters describe the purpose and contents of each message.
+
+## Output Dataset Files
+
+```
+DEEPGTAV_EXPORT_DIR
+└── object
+    ├── calib
+    │   ├── 000000.txt
+    │   └── ...
+    ├── camera_pose
+    │   ├── 000000.txt
+    │   └── ...
+    ├── depth
+    │   ├── 000000.bin
+    │   └── ...
+    ├── ego_object
+    │   ├── 000000.txt
+    │   └── ...
+    ├── image_2
+    │   ├── 000000.png
+    │   └── ...
+    ├── label_2
+    │   ├── 000000.txt
+    │   └── ...
+    ├── label_aug_2
+    │   ├── 000000.txt
+    │   └── ...
+    ├── position_world
+    │   ├── 000000.txt
+    │   └── ...
+    ├── stencil
+    │   ├── 000000.raw
+    │   └── ...
+    ├── velodyne
+    │   ├── 000000.bin
+    │   └── ...
+    │
+    ├── location.txt
+    ├── TimeAnalysis.txt
+    └── UsedPixel.txt
+```
 
 ## Messages from the client to DeepGTAV
 
