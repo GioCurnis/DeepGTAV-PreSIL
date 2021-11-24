@@ -41,9 +41,9 @@ void Scenario::parseScenarioConfig(const Value& sc, bool setDefaults) {
     log(std::to_string(setDefaults));
 
     log(std::to_string(location.IsArray()));
-    log(std::to_string(location[0].GetInt()));
-    log(std::to_string(location[1].GetInt()));
-    log(std::to_string(location[2].GetInt()));
+    log(std::to_string(location[0].GetFloat()));
+    log(std::to_string(location[1].GetFloat()));
+    log(std::to_string(location[2].GetFloat()));
 
 	if (location.IsArray()) {
 		if (!location[0].IsNull()) x = location[0].GetFloat();
@@ -201,7 +201,7 @@ void Scenario::parseDatasetConfig(const Value& dc, bool setDefaults) {
     if (!dc["positionScenario"].IsNull()) m_positionScenario = dc["positionScenario"].GetBool();
     else if (setDefaults) m_positionScenario = _POSITION_SCENARIO_;
 
-    if (DRIVE_SPEC_AREA && !stationaryScene) {
+    /*if (DRIVE_SPEC_AREA && !stationaryScene) {
         int startArea = 0;
         dir.x = s_locationBounds[3][0][3];
         dir.y = s_locationBounds[3][1][3];
@@ -209,10 +209,11 @@ void Scenario::parseDatasetConfig(const Value& dc, bool setDefaults) {
         x = s_locationBounds[3][0][3];//1,2,3,4,5,6,7,8 are all good
         y = s_locationBounds[3][1][3];//1-0 was last one used for 'good' data
         z = 64.0f;
-    }
+    }*/
 
     log("dir x: "+std::to_string(dir.x));
     log("dir y: "+std::to_string(dir.y));
+    log("dir z: " + std::to_string(dir.z));
 
     if (stationaryScene || TRUPERCEPT_SCENARIO) {
         vehiclesToCreate.clear();
@@ -370,12 +371,12 @@ void Scenario::buildScenario() {
 
 	AI::CLEAR_PED_TASKS(ped);
 	if (_drivingMode >= 0 && !stationaryScene && !m_positionScenario) {
-        if (DRIVE_SPEC_AREA && !START_SPEC_AREA) {
+        if (DRIVE_SPEC_AREA) {
             log("se non scrivo questo ho un problema");
             log("dir x: " + std::to_string(dir.x));
             log("dir y: " + std::to_string(dir.y));
             log("dir z: " + std::to_string(dir.z));
-            AI::TASK_VEHICLE_DRIVE_TO_COORD(ped, m_ownVehicle, dir.x, dir.y, dir.z, _setSpeed, Any(1.f), vehicleHash, _drivingMode, 50.f, true);
+            AI::TASK_VEHICLE_DRIVE_TO_COORD(ped, m_ownVehicle, dir.x, dir.y, dir.z, _setSpeed, Any(1.f), vehicleHash, _drivingMode, 0.f, true);
             log("anche dopo drive_to_coord");
         }
         else {

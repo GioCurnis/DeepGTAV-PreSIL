@@ -137,7 +137,8 @@ if __name__ == '__main__':
 
         # vehicles.append(["bus", 14, 0, 0, 0, 0])
         # startLocation = [-564.368, 26.8335, 47, 295.413]
-        startLocation = [992, 2036, 58, 180]
+        #startLocation = [992, 2036, 58, 180]
+        startLocation = [-258.67, 3928.68, 41.27]
         lidarParam = 7
         dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds,
                         direction=None, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=False,
@@ -156,8 +157,19 @@ if __name__ == '__main__':
         #peds.append([10, 13, 5, 90])
         #vehicles.append(["voltic", 30, -6, 160, 0, 0])
         #set_speed = 2.0
-        finalDestination = [-896.67, 4380.34, 17.60]
+        #finalDestination = [-896.67, 4380.34, 17.60]
         # Call to start dataset collection
+
+        #finalDestination = [-841.222, 4067.840, 164.520] #raton canyon 1 end
+        #startLocation = [-256.690, 3927.622, 40.870] #raton canyon 1 start 
+
+        #finalDestination = [-2260.600, 4346.040, 43.090] #raton canyon 2 end
+        #startLocation = [-841.222, 4067.840, 164.520] #raton canyon 2 start     
+
+        finalDestination = [790.620, 2117.660, 62.200] #hills 1 end
+        startLocation = [920.900, 1746.310, 165.020] #hills 1 start
+
+
         dataset = Dataset(rate=captureRate, frame=[width,height], throttle=True, brake=True, steering=True, vehicles=collectVehicles, peds=collectPeds,
                         direction=finalDestination, speed=True, yawRate=True, location=True, time=True, offscreen=collectOffscreen, showBoxes=False, pointclouds=True,
                         stationaryScene=False, collectTracking=tracking, vehiclesToCreate=vehicles, pedsToCreate=peds, startIndex=startIndex, recordScenario=recordScenario, positionScenario=positionScenario)
@@ -165,7 +177,7 @@ if __name__ == '__main__':
         #startLocation = [992, 2036, 58, 180]
         #startLocation = [924, 1752, 166]
         #startLocation = [2561, 2637]
-        startLocation = [-1499.97, 4953.67] #fiume e raton canyon
+        #startLocation = [-1499.97, 4953.67] #fiume e raton canyon
         # Pitch view
         # startLocation = [-697.306, 995.426, 239, 55.1029]
         # startLocation = [-539.831, 665.427, 142.673, 278.001]

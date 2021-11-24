@@ -1,5 +1,5 @@
 //DATASET
-#define _RATE_ 25
+#define _RATE_ 10
 #define _WIDTH_ 1920
 #define _HEIGHT_ 1080
 #define _VEHICLES_ true
